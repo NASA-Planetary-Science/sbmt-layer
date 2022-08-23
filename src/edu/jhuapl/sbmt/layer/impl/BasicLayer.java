@@ -1,11 +1,9 @@
 package edu.jhuapl.sbmt.layer.impl;
 
 import java.util.List;
-import java.util.Set;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
@@ -35,13 +33,13 @@ public abstract class BasicLayer implements Layer
         }
 
         @Override
-        public Set<Class<?>> getPixelTypes()
+        protected boolean checkIndices(int i, int j, Pixel p)
         {
-            return ImmutableSet.of();
+            return false;
         }
 
         @Override
-        protected boolean checkIndices(int i, int j, Pixel p)
+        public boolean isGetAccepts(Class<?> pixelType)
         {
             return false;
         }

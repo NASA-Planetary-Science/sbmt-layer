@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.layer.impl;
 
 import java.util.List;
-import java.util.Set;
 
 import edu.jhuapl.sbmt.layer.api.Layer;
 
@@ -21,9 +20,9 @@ public abstract class ResampledLayer extends BasicLayer
     }
 
     @Override
-    public Set<Class<?>> getPixelTypes()
+    public boolean isGetAccepts(Class<?> pixelType)
     {
-        return getInputLayer().getPixelTypes();
+        return getInputLayer().isGetAccepts(pixelType);
     }
 
     @Override

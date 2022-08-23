@@ -33,16 +33,10 @@ public abstract class BasicLayerOfVectorDouble extends BasicLayer
         super(iSize, jSize);
     }
 
-    /**
-     * Returns a set containing <code>{@link PixelDouble}.class</code> and
-     * <code>{@link PixelVector}.class</code>. Note that the
-     * {@link #get(int, int, Pixel)} implementation will only succeed for vector
-     * pixels if they consist of all {@link PixelDouble} instances.
-     */
     @Override
-    public Set<Class<?>> getPixelTypes()
+    public boolean isGetAccepts(Class<?> pixelType)
     {
-        return AcceptedPixelTypes;
+        return AcceptedPixelTypes.contains(pixelType);
     }
 
     /**

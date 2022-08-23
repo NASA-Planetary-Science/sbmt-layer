@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.layer.api;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * A collection of arbitrarily complex data whose elements are indexed in two
@@ -67,17 +66,6 @@ public interface Layer
     }
 
     /**
-     * Return a set of the types of {@link Pixel} sub-interfaces that the
-     * {@link #get(int, int, Pixel)} method accepts for the pixel argument.
-     * <p>
-     * Implementations are free to return an empty set, but they may not return
-     * null.
-     *
-     * @return the interface types
-     */
-    Set<Class<?>> getPixelTypes();
-
-    /**
      * Return a flag that indicates whether this implementation's
      * {@link #get(int, int, Pixel)} method can get data using pixels that
      * implement the specified type.
@@ -86,10 +74,7 @@ public interface Layer
      * @return true if this layer's {@link #get(int, int, Pixel)} method accepts
      *         pixels that have the type pixelType
      */
-    default boolean isGetAccepts(Class<?> pixelType)
-    {
-        return getPixelTypes().contains(pixelType);
-    }
+    boolean isGetAccepts(Class<?> pixelType);
 
     /**
      * Retrieve data associated with the specified indices, and use it to set

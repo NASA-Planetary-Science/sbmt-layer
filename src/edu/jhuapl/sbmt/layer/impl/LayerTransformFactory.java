@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.layer.impl;
 
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
@@ -481,12 +480,6 @@ public class LayerTransformFactory
                 }
 
                 @Override
-                public Set<Class<?>> getPixelTypes()
-                {
-                    return layer.getPixelTypes();
-                }
-
-                @Override
                 protected void getElement(int i, int j, int k, Pixel p)
                 {
                     layer.get(i, j, slicePixel);
@@ -505,6 +498,12 @@ public class LayerTransformFactory
                         Pixel p = pv.get(k);
                         p.setInBounds(false);
                     }
+                }
+
+                @Override
+                public boolean isGetAccepts(Class<?> pixelType)
+                {
+                    return layer.isGetAccepts(pixelType);
                 }
             };
 
@@ -803,12 +802,6 @@ public class LayerTransformFactory
         public boolean isInBounds(int i, int j)
         {
             return target.isInBounds(i, j);
-        }
-
-        @Override
-        public Set<Class<?>> getPixelTypes()
-        {
-            return target.getPixelTypes();
         }
 
         @Override
