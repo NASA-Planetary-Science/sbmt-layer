@@ -8,7 +8,7 @@ import edu.jhuapl.sbmt.layer.api.PixelDouble;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
 
 /**
- * Implementation of {@link VectorDouble} that inherits its general
+ * Implementation of {@link PixelVector} that inherits its general
  * {@link Pixel} functionality from {@link BasicPixel}.
  *
  * @author James Peachey

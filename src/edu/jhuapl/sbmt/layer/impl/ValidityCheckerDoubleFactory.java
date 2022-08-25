@@ -1,11 +1,11 @@
 package edu.jhuapl.sbmt.layer.impl;
 
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ScalarValidityChecker;
+import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker2d;
 
 public class ValidityCheckerDoubleFactory
 {
 
-    private static final ScalarValidityChecker AllValid = (i, j, value) -> {
+    private static final ValidityChecker2d AllValid = (i, j, value) -> {
         return true;
     };;
 
@@ -14,7 +14,7 @@ public class ValidityCheckerDoubleFactory
         super();
     }
 
-    public ScalarValidityChecker scalar(double... invalidValues)
+    public ValidityChecker2d checker2d(double... invalidValues)
     {
 
         return (i, j, value) -> {
@@ -31,7 +31,7 @@ public class ValidityCheckerDoubleFactory
 
     }
 
-    public ScalarValidityChecker allValid() {
+    public ValidityChecker2d allValid() {
         return AllValid;
     }
 

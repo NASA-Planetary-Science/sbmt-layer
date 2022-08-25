@@ -48,14 +48,14 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
         return this;
     }
 
-    public LayerDoubleBuilder checker(ScalarValidityChecker checker)
+    public LayerDoubleBuilder checker(ValidityChecker2d checker)
     {
         setChecker(checker);
 
         return this;
     }
 
-    public LayerDoubleBuilder checker(VectorValidityChecker checker)
+    public LayerDoubleBuilder checker(ValidityChecker3d checker)
     {
         setChecker(checker);
 
@@ -108,7 +108,7 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
 
     protected Layer create(DoubleGetter2d getter, int iSize, int jSize)
     {
-        ScalarValidityChecker checker = scalarChecker();
+        ValidityChecker2d checker = validityChecker2d();
 
         RangeGetter rangeGetter = this.rangeGetter.get();
 
@@ -128,7 +128,7 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
                     return super.isValid(iSize, jSize, value);
                 }
 
-                return checker == null || checker.test(i, j, value);
+                return checker == null || checker.isValid(i, j, value);
             }
 
             @Override
@@ -157,6 +157,7 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
 
                 return toString;
             }
+
         };
     }
 
@@ -164,7 +165,7 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
     {
         List<Integer> dataSizes = ImmutableList.of(Integer.valueOf(kSize));
 
-        VectorValidityChecker checker = vectorChecker();
+        ValidityChecker3d checker = validityChecker3d();
 
         RangeGetter rangeGetter = this.rangeGetter.get();
 
@@ -185,7 +186,7 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
             @Override
             protected boolean isValid(int i, int j, int k, double value)
             {
-                return checker == null || checker.test(i, j, k, value);
+                return checker == null || checker.isValid(i, j, k, value);
             }
 
             @Override
@@ -201,6 +202,18 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
                 Preconditions.checkNotNull(pMax);
 
                 LayerDoubleBuilder.this.getRange(rangeGetter, pMin, pMax);
+            }
+
+            @Override
+            public String toString()
+            {
+                String toString = super.toString();
+                if (rangeGetter != null)
+                {
+                    toString += ", range " + rangeGetter;
+                }
+
+                return toString;
             }
 
         };

@@ -49,7 +49,7 @@ public class RangeGetterDoubleBuilder extends DoubleBuilderBase
         return this;
     }
 
-    public RangeGetterDoubleBuilder checker(ScalarValidityChecker checker)
+    public RangeGetterDoubleBuilder checker(ValidityChecker2d checker)
     {
         setChecker(checker);
 
@@ -64,7 +64,7 @@ public class RangeGetterDoubleBuilder extends DoubleBuilderBase
 
         if (getter != null)
         {
-            ScalarValidityChecker checker = scalarChecker();
+            ValidityChecker2d checker = validityChecker2d();
 
             range = getRange(getter, checker);
         }
@@ -75,7 +75,7 @@ public class RangeGetterDoubleBuilder extends DoubleBuilderBase
         return create(range);
     }
 
-    protected double[] getRange(DoubleGetter2d doubleGetter, ScalarValidityChecker checker)
+    protected double[] getRange(DoubleGetter2d doubleGetter, ValidityChecker2d checker)
     {
         double[] range = null;
 
@@ -84,7 +84,7 @@ public class RangeGetterDoubleBuilder extends DoubleBuilderBase
             for (int j = 0; j < jSize(); ++j)
             {
                 double value = doubleGetter.get(i, j);
-                if (checker == null || checker.test(i, j, value))
+                if (checker == null || checker.isValid(i, j, value))
                 {
                     range = updateRange(range, value);
                 }

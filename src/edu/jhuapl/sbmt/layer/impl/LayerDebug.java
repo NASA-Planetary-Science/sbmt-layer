@@ -1,18 +1,15 @@
-package edu.jhuapl.sbmt.layer;
+package edu.jhuapl.sbmt.layer.impl;
 
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
-import edu.jhuapl.sbmt.layer.impl.PixelDoubleFactory;
-import edu.jhuapl.sbmt.layer.impl.PixelVectorDoubleFactory;
 
-public class LayerDebug
+class LayerDebug
 {
-	protected static final double TestOOBValue = -100.0;
-	protected static final PixelDoubleFactory PixelScalarFactory = new PixelDoubleFactory();
-	protected static final PixelVectorDoubleFactory PixelVectorFactory = new PixelVectorDoubleFactory();
+    protected static final double TestOOBValue = -100.0;
+    protected static final PixelDoubleFactory PixelScalarFactory = new PixelDoubleFactory();
+    protected static final PixelVectorDoubleFactory PixelVectorFactory = new PixelVectorDoubleFactory();
 
-
-	public static void displayLayer(String message, Layer layer, int displayKsize, Double invalidValueSubstitute)
+    public static void displayLayer(String message, Layer layer, int displayKsize, Double invalidValueSubstitute)
     {
         System.out.println("************************************************");
         System.out.println(message);

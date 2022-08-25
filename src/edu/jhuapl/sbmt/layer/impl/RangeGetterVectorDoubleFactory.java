@@ -11,8 +11,8 @@ import edu.jhuapl.sbmt.layer.impl.BuilderBase.VectorRangeGetter;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter2d;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter3d;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleRangeGetter;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ScalarValidityChecker;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.VectorValidityChecker;
+import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker2d;
+import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker3d;
 
 public class RangeGetterVectorDoubleFactory
 {
@@ -88,13 +88,13 @@ public class RangeGetterVectorDoubleFactory
         };
     }
 
-    public VectorRangeGetter of(DoubleGetter3d doubleGetter, VectorValidityChecker checker, DoubleRangeGetter overallRange, int iSize, int jSize, int kSize)
+    public VectorRangeGetter of(DoubleGetter3d doubleGetter, ValidityChecker3d checker, DoubleRangeGetter overallRange, int iSize, int jSize, int kSize)
     {
         List<DoubleRangeGetter> ranges = new ArrayList<>(kSize);
         for (int k = 0; k < kSize; ++k)
         {
             DoubleGetter2d sGetter = kSlice(doubleGetter, k);
-            ScalarValidityChecker sChecker = slice(checker, k);
+            ValidityChecker2d sChecker = slice(checker, k);
 
             RangeGetterDoubleBuilder b = new RangeGetterDoubleBuilder();
 
@@ -124,10 +124,10 @@ public class RangeGetterVectorDoubleFactory
         };
     }
 
-    protected ScalarValidityChecker slice(VectorValidityChecker checker, int k)
+    protected ValidityChecker2d slice(ValidityChecker3d checker, int k)
     {
-        ScalarValidityChecker sChecker = checker != null ? (i, j, value) -> {
-            return checker.test(i, j, k, value);
+        ValidityChecker2d sChecker = checker != null ? (i, j, value) -> {
+            return checker.isValid(i, j, k, value);
         } : null;
 
         return sChecker;

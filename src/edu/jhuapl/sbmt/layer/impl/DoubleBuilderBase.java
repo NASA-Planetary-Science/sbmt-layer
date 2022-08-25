@@ -70,45 +70,45 @@ public abstract class DoubleBuilderBase extends BuilderBase
     }
 
     /**
-     * Checker for validity of scalar double values, based on the location
+     * Checker for validity of 2-d layer double values, based on the location
      * (index pair) and/or the value at that location.
      */
     @FunctionalInterface
-    public interface ScalarValidityChecker extends ValidityChecker
+    public interface ValidityChecker2d extends ValidityChecker
     {
 
         /**
          * Return true if the value should be considered "valid" for display or
          * computation.
          *
-         * @param i the index in the I-th dimension to test
-         * @param j the index in the J-th dimension to test
-         * @param value the value to test
+         * @param i the index in the I-th dimension to check
+         * @param j the index in the J-th dimension to check
+         * @param value the value to check
          * @return true if the value located by the index pair is valid
          */
-        boolean test(int i, int j, double value);
+        boolean isValid(int i, int j, double value);
 
     }
 
     /**
-     * Checker for validity of vector double values, based on the location
+     * Checker for validity of 3-d layer double values, based on the location
      * (index triple) and/or the value at that location.
      */
     @FunctionalInterface
-    public interface VectorValidityChecker extends ValidityChecker
+    public interface ValidityChecker3d extends ValidityChecker
     {
 
         /**
          * Return true if the value should be considered "valid" for display or
          * computation.
          *
-         * @param i the index in the I-th dimension to test
-         * @param j the index in the J-th dimension to test
-         * @param k the index in the K-th dimension to test
-         * @param value the value to test
+         * @param i the index in the I-th dimension to check
+         * @param j the index in the J-th dimension to check
+         * @param k the index in the K-th dimension to check
+         * @param value the value to check
          * @return true if the value located by the index triple is valid
          */
-        boolean test(int i, int j, int k, double value);
+        boolean isValid(int i, int j, int k, double value);
 
     }
 
@@ -202,7 +202,7 @@ public abstract class DoubleBuilderBase extends BuilderBase
     }
 
     /**
-     * If the builder has been configured with a {@link ScalarValidityChecker},
+     * If the builder has been configured with a {@link ValidityChecker2d},
      * return it. If no validity checker of any kind has been specified, return
      * null. The checker is configured using the method
      * {@link BuilderBase#setChecker(ValidityChecker)}.
@@ -211,32 +211,32 @@ public abstract class DoubleBuilderBase extends BuilderBase
      * @throws IllegalStateException if the builder was configured with some
      *             other (non-scalar) validity checker
      */
-    protected ScalarValidityChecker scalarChecker()
+    protected ValidityChecker2d validityChecker2d()
     {
         ValidityChecker checker = this.checker.get();
 
-        Preconditions.checkState(checker == null || checker instanceof ScalarValidityChecker);
+        Preconditions.checkState(checker == null || checker instanceof ValidityChecker2d);
 
-        return (ScalarValidityChecker) checker;
+        return (ValidityChecker2d) checker;
     }
 
     /**
-     * If the builder has been configured with a {@link VectorValidityChecker},
+     * If the builder has been configured with a {@link ValidityChecker3d},
      * return it. If no validity checker of any kind has been specified, return
      * null. The checker is configured using the method
      * {@link BuilderBase#setChecker(ValidityChecker)}.
      *
      * @return the checker
      * @throws IllegalStateException if the builder was configured with some
-     *             other (non-vector) validity checker
+     *             other (non-3d) validity checker
      */
-    protected VectorValidityChecker vectorChecker()
+    protected ValidityChecker3d validityChecker3d()
     {
         ValidityChecker checker = this.checker.get();
 
-        Preconditions.checkState(checker == null || checker instanceof VectorValidityChecker);
+        Preconditions.checkState(checker == null || checker instanceof ValidityChecker3d);
 
-        return (VectorValidityChecker) checker;
+        return (ValidityChecker3d) checker;
     }
 
     /**
@@ -384,22 +384,22 @@ public abstract class DoubleBuilderBase extends BuilderBase
         return new double[] { min, max };
     }
 
-    private static final ScalarValidityChecker AllScalarsValid = (i, j, value) -> {
+    private static final ValidityChecker2d AllValid2d = (i, j, value) -> {
         return true;
     };
 
-    private static final VectorValidityChecker AllVectorsValid = (i, j, k, value) -> {
+    private static final ValidityChecker3d AllValid3d = (i, j, k, value) -> {
         return true;
     };
 
-    public static ScalarValidityChecker allScalarsValid()
+    public static ValidityChecker2d allValid2d()
     {
-        return AllScalarsValid;
+        return AllValid2d;
     }
 
-    public static VectorValidityChecker allVectorsValid()
+    public static ValidityChecker3d allValid3d()
     {
-        return AllVectorsValid;
+        return AllValid3d;
     }
 
 }
