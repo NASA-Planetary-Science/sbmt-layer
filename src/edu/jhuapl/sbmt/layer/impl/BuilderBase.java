@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.google.common.base.Preconditions;
 
 import edu.jhuapl.sbmt.layer.api.Layer;
-import edu.jhuapl.sbmt.layer.api.Pixel;
 
 /**
  * Base class for builders of all sorts used to create abstractoins related to
@@ -22,48 +21,6 @@ import edu.jhuapl.sbmt.layer.api.Pixel;
  */
 public abstract class BuilderBase
 {
-
-    /**
-     * Marker interface for abstractions that check the validity of a
-     * {@link Pixel}, and/or a value within a {@link Pixel} and/or a location in
-     * a {@link Layer}.
-     */
-    public interface ValidityChecker
-    {
-
-    }
-
-    /**
-     * Marker interface for abstractions that provide the range of
-     * {@link Pixel}s within a {@link Layer}.
-     */
-    public interface RangeGetter
-    {
-
-    }
-
-    /**
-     * Interface for abstractions that provide ranges for {@link Layer}s that
-     * contain vector-valued pixels.
-     */
-    public interface VectorRangeGetter extends RangeGetter
-    {
-        /**
-         * Return the number of range elements.
-         *
-         * @return number of elements in the vector
-         */
-        int size();
-
-        /**
-         * Return the {@link RangeGetter} associated with a specified index.
-         *
-         * @param index the index
-         * @return the range getter
-         * @throws IndexOutOfBoundsException if the index is out of bounds
-         */
-        RangeGetter get(int index);
-    }
 
     // Using AtomicReference mainly for convenience, not concurrency. This class
     // is not thread-safe.

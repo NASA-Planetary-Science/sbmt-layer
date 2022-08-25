@@ -2,9 +2,6 @@ package edu.jhuapl.sbmt.layer.impl;
 
 import com.google.common.base.Preconditions;
 
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter2d;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter3d;
-
 public class DoubleGetterAdaptor
 {
     @FunctionalInterface

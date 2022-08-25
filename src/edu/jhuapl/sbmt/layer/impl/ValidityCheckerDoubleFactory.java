@@ -1,7 +1,5 @@
 package edu.jhuapl.sbmt.layer.impl;
 
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker2d;
-
 public class ValidityCheckerDoubleFactory
 {
 

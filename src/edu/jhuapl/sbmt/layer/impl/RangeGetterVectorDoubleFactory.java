@@ -6,13 +6,7 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
-import edu.jhuapl.sbmt.layer.impl.BuilderBase.RangeGetter;
-import edu.jhuapl.sbmt.layer.impl.BuilderBase.VectorRangeGetter;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter2d;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter3d;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleRangeGetter;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker2d;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker3d;
 
 public class RangeGetterVectorDoubleFactory
 {

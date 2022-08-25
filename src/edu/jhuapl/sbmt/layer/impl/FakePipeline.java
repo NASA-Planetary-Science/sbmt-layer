@@ -8,12 +8,7 @@ import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
-import edu.jhuapl.sbmt.layer.impl.BuilderBase.VectorRangeGetter;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter2d;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleGetter3d;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleRangeGetter;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker2d;
-import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.ValidityChecker3d;
 import edu.jhuapl.sbmt.layer.impl.DoubleGetterAdaptor.IJtoSingleIndex;
 import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory.ForwardingLayer;
 
@@ -130,7 +125,7 @@ public abstract class FakePipeline
      * @param rangeGetter range getter or null for no range getter added
      * @return the layer
      */
-    protected Layer ofScalar(int iSize, int jSize, DoubleBuilderBase.ValidityChecker2d checker, DoubleRangeGetter rangeGetter)
+    protected Layer ofScalar(int iSize, int jSize, ValidityChecker2d checker, DoubleRangeGetter rangeGetter)
     {
         DoubleGetter2d doubleGetter = dataGenerator(iSize);
 
@@ -295,7 +290,7 @@ public abstract class FakePipeline
      * @param iSize the i size.
      * @param jSize the j size.
      */
-    protected DoubleBuilderBase.ValidityChecker2d testScalarChecker(int iSize, int jSize)
+    protected ValidityChecker2d testScalarChecker(int iSize, int jSize)
     {
         return (i, j, value) -> {
             boolean isValid = (j * iSize + i + 1) % 5 != 0 // Multiple of 5.
@@ -309,9 +304,9 @@ public abstract class FakePipeline
      * Arbitrary vector validity checker. Use the scalar checker but also
      * invalidate every value that is a multiple of 5.
      */
-    protected DoubleBuilderBase.ValidityChecker3d testVectorChecker(int iSize, int jSize)
+    protected ValidityChecker3d testVectorChecker(int iSize, int jSize)
     {
-        DoubleBuilderBase.ValidityChecker2d scalarChecker = testScalarChecker(iSize, jSize);
+        ValidityChecker2d scalarChecker = testScalarChecker(iSize, jSize);
 
         return (i, j, k, value) -> {
             // Return false if the scalar checker returns false.
