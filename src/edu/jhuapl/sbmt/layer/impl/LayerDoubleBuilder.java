@@ -1,7 +1,6 @@
 package edu.jhuapl.sbmt.layer.impl;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -20,13 +19,9 @@ import edu.jhuapl.sbmt.layer.api.PixelVector;
  */
 public class LayerDoubleBuilder extends DoubleBuilderBase
 {
-    protected final AtomicReference<DoubleGetter> getter;
-
     public LayerDoubleBuilder()
     {
         super();
-
-        this.getter = new AtomicReference<>();
     }
 
     public LayerDoubleBuilder doubleGetter(DoubleGetter2d getter, int iSize, int jSize)
