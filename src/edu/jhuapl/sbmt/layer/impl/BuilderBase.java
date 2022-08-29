@@ -7,7 +7,7 @@ import com.google.common.base.Preconditions;
 import edu.jhuapl.sbmt.layer.api.Layer;
 
 /**
- * Base class for builders of all sorts used to create abstractoins related to
+ * Base class for builders of all sorts used to create abstractions related to
  * {@link Layer} instances. Defines and enforces invariants for all the
  * properties used by any of the builders. The base implementation has only
  * protected methods and fields; subclasses can pick and choose which features
@@ -141,7 +141,8 @@ public abstract class BuilderBase
     }
 
     /**
-     * Get a value contained in an {@link AtomicReference}, but never returns null
+     * Get a value contained in an {@link AtomicReference}, but never return
+     * null.
      *
      * @param <T> generic type of the property
      * @param r the reference that holds the property
