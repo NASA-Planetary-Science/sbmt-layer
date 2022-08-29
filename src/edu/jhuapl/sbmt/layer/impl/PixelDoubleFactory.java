@@ -19,19 +19,41 @@ public class PixelDoubleFactory
         super();
     }
 
+    public PixelDouble of(double value, double outOfBoundsValue)
+    {
+        return new BasicPixelDouble(value, true, true) {
+
+            @Override
+            public double getOutOfBoundsValue()
+            {
+                return outOfBoundsValue;
+            }
+
+        };
+    }
+
     public PixelDouble of(double value, double outOfBoundsValue, Double invalidValue)
     {
+        if (invalidValue == null)
+        {
+            return of(value, outOfBoundsValue);
+        }
+
         return new BasicPixelDouble(value, true, true) {
 
             @Override
             public double get()
             {
-                if (invalidValue != null && !isValid() && isInBounds())
+                if (!isInBounds())
+                {
+                    return outOfBoundsValue;
+                }
+                else if (!isValid())
                 {
                     return invalidValue.doubleValue();
                 }
 
-                return super.get();
+                return getStoredValue();
             }
 
             @Override
@@ -47,20 +69,14 @@ public class PixelDoubleFactory
     {
         Preconditions.checkNotNull(pixel);
 
-        double outOfBoundsValue = pixel.getOutOfBoundsValue();
         double value = pixel.getStoredValue();
-        boolean isValid = pixel.isValid();
+        double outOfBoundsValue = pixel.getOutOfBoundsValue();
         boolean inBounds = pixel.isInBounds();
+        boolean isValid = pixel.isValid();
 
-        pixel = new BasicPixelDouble(value, isValid, inBounds) {
-
-            @Override
-            public double getOutOfBoundsValue()
-            {
-                return outOfBoundsValue;
-            }
-
-        };
+        pixel = of(value, outOfBoundsValue);
+        pixel.setInBounds(inBounds);
+        pixel.setIsValid(isValid);
 
         return pixel;
     }

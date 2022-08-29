@@ -8,8 +8,8 @@ import edu.jhuapl.sbmt.layer.api.PixelDouble;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
 
 /**
- * Implementation of {@link PixelVector} that inherits its general
- * {@link Pixel} functionality from {@link BasicPixel}.
+ * Implementation of {@link PixelVector} that inherits its general {@link Pixel}
+ * functionality from {@link BasicPixel}.
  *
  * @author James Peachey
  *
@@ -18,20 +18,29 @@ public abstract class BasicPixelVectorDouble extends BasicPixel implements Pixel
 {
 
     private final ImmutableList<ScalarPixel> pixels;
-    private final Double invalidValue;
 
-    protected BasicPixelVectorDouble(int size, boolean isValid, boolean inBounds, Double invalidValue)
+    protected BasicPixelVectorDouble(int size, double initialValue, boolean isValid, boolean inBounds)
     {
         super(isValid, inBounds);
 
+        this.pixels = initializePixels(size, initialValue);
+    }
+
+    protected ImmutableList<ScalarPixel> initializePixels(int size, double initialValue)
+    {
         ImmutableList.Builder<ScalarPixel> builder = ImmutableList.builder();
-        for (int index = 0; index < size; ++index)
+
+        for (int i = 0; i < size; ++i)
         {
-            builder.add(new ScalarPixel(isValid, inBounds));
+            builder.add(createPixelDouble(initialValue));
         }
 
-        this.pixels = builder.build();
-        this.invalidValue = invalidValue;
+        return builder.build();
+    }
+
+    protected ScalarPixel createPixelDouble(double initialValue)
+    {
+        return new ScalarPixel(initialValue, true, true);
     }
 
     @Override
@@ -44,8 +53,7 @@ public abstract class BasicPixelVectorDouble extends BasicPixel implements Pixel
 
         for (int k = 0; k < size(); ++k)
         {
-            ScalarPixel pd = get(k);
-            if (pd.isValid() && pd.isThisPixelInBounds())
+            if (((ScalarPixel) get(k)).isThisPixelValid())
             {
                 return true;
             }
@@ -64,7 +72,7 @@ public abstract class BasicPixelVectorDouble extends BasicPixel implements Pixel
 
         for (int k = 0; k < size(); ++k)
         {
-            if (get(k).isThisPixelInBounds())
+            if (((ScalarPixel) get(k)).isThisPixelInBounds())
             {
                 return true;
             }
@@ -78,12 +86,17 @@ public abstract class BasicPixelVectorDouble extends BasicPixel implements Pixel
      * pixel is out of bounds in its layer, that is, if {@link #isInBounds()}
      * returns false.
      * <p>
-     * This value shall ALSO returned if the argument to {@link #getDouble(int)} is
-     * out of bounds within the pixel.
+     * This value shall ALSO returned if the argument to {@link #getDouble(int)}
+     * is out of bounds within the pixel.
      *
      * @return the out-of-bounds value
      */
-    public abstract double getOutOfBoundsValue();
+    protected abstract double getOutOfBoundsValue();
+
+    protected Double getInvalidValueToReturn()
+    {
+        return null;
+    }
 
     @Override
     public int size()
@@ -92,7 +105,7 @@ public abstract class BasicPixelVectorDouble extends BasicPixel implements Pixel
     }
 
     @Override
-    public ScalarPixel get(int index)
+    public PixelDouble get(int index)
     {
         if (!checkIndex(index, 0, size()))
         {
@@ -177,23 +190,23 @@ public abstract class BasicPixelVectorDouble extends BasicPixel implements Pixel
         return builder.toString();
     }
 
-    public class ScalarPixel extends BasicPixelDouble
+    protected class ScalarPixel extends BasicPixelDouble
     {
 
-        protected ScalarPixel(boolean isValid, boolean inBounds)
+        protected ScalarPixel(double initialValue, boolean isValid, boolean inBounds)
         {
-            super(0., isValid, inBounds);
+            super(initialValue, isValid, inBounds);
         }
 
         @Override
-        public double get()
+        public boolean isValid()
         {
-            if (invalidValue != null && !isValid() && isInBounds())
-            {
-                return invalidValue.doubleValue();
-            }
+            return BasicPixelVectorDouble.this.isValid() && isThisPixelValid();
+        }
 
-            return super.get();
+        protected boolean isThisPixelValid()
+        {
+            return super.isValid();
         }
 
         @Override
