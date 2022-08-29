@@ -56,6 +56,11 @@ public class RangeGetterVectorDoubleFactory
                 return rangeGetter;
             }
 
+            @Override
+            public String toString()
+            {
+                return rangeGetter.toString();
+            }
         };
     }
 
@@ -79,6 +84,11 @@ public class RangeGetterVectorDoubleFactory
                 return rangeList.get(index);
             }
 
+            @Override
+            public String toString()
+            {
+                return get(0).toString() + "...";
+            }
         };
     }
 
