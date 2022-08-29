@@ -34,7 +34,7 @@ public class SampleGdalUseCase
             }.load();
 
             Layer layer = layers.get(0);
-            PixelDouble pd = new PixelDoubleFactory().of(Double.NaN, Double.NaN, Double.NaN);
+            PixelDouble pd = new PixelDoubleFactory().of(Double.NaN, Double.NaN);
             for (int j = 0; j < layer.jSize(); ++j)
             {
                 boolean printRow = false;

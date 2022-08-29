@@ -631,8 +631,8 @@ public abstract class FakePipeline
             {
                 try
                 {
-                    PixelDouble pMin = PixelScalarFactory.of(Double.NaN, Double.NaN, null);
-                    PixelDouble pMax = PixelScalarFactory.of(Double.NaN, Double.NaN, null);
+                    PixelDouble pMin = PixelScalarFactory.of(Double.NaN, Double.NaN);
+                    PixelDouble pMax = PixelScalarFactory.of(Double.NaN, Double.NaN);
                     layer.getRange(pMin, pMax);
 
                     boolean displayDetails = false;
@@ -713,12 +713,15 @@ public abstract class FakePipeline
                 ValidityChecker3d checker = checkValidity ? testVectorChecker(TestISize, TestJSize) : null;
 
                 DoubleRangeGetter overallRange = null;
-                if ( min != null || max != null) {
+                if (min != null || max != null)
+                {
                     RangeGetterDoubleBuilder b = new RangeGetterDoubleBuilder();
-                    if (min != null) {
+                    if (min != null)
+                    {
                         b.min(min);
                     }
-                    if (max != null) {
+                    if (max != null)
+                    {
                         b.max(max);
                     }
 
