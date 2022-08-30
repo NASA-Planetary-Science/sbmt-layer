@@ -1,7 +1,5 @@
 package edu.jhuapl.sbmt.layer.gdal;
 
-import java.util.List;
-
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdalconst.gdalconst;
@@ -10,8 +8,14 @@ import com.google.common.collect.ImmutableList;
 
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
+import edu.jhuapl.sbmt.layer.impl.BasicLayer;
+import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleRangeGetter;
 import edu.jhuapl.sbmt.layer.impl.DoubleGetter2d;
+import edu.jhuapl.sbmt.layer.impl.DoubleGetter3d;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleBuilder;
+import edu.jhuapl.sbmt.layer.impl.RangeGetter;
+import edu.jhuapl.sbmt.layer.impl.ValidityChecker3d;
+import edu.jhuapl.sbmt.layer.impl.VectorRangeGetter;
 
 /**
  * Load a list of {@link Layer}s from a file using GDAL.
@@ -28,6 +32,11 @@ public abstract class LayerLoader
     }
 
     protected abstract Dataset getDataSet();
+
+    protected ValidityChecker3d getValidityChecker()
+    {
+        return null;
+    }
 
     /**
      * Load one or more {@link Layer}s from the GDAL {@link Dataset} returned by
@@ -48,36 +57,129 @@ public abstract class LayerLoader
      * @throws UnsupportedDataTypeException if the underlying type in the GDAL
      *             {@link Dataset} cannot be read into the layer
      */
-    public List<Layer> load()
+    public Layer load()
     {
         Dataset dataSet = getDataSet();
         int numBands = dataSet.GetRasterCount();
 
-        ImmutableList.Builder<Layer> builder = ImmutableList.builder();
+        ImmutableList.Builder<DoubleGetter2d> dataBuilder = ImmutableList.builder();
+        ImmutableList.Builder<DoubleRangeGetter> rangeBuilder = ImmutableList.builder();
+
+        Integer iSize = null;
+        Integer jSize = null;
+
         for (int bandIndex = 0; bandIndex < numBands; ++bandIndex)
         {
             Band band = dataSet.GetRasterBand(bandIndex + 1);
 
             if (band != null)
             {
-                builder.add(createLayer(band));
+                if (iSize == null)
+                {
+                    iSize = Integer.valueOf(band.GetXSize());
+                }
+                else
+                {
+                    iSize = Math.max(iSize.intValue(), band.GetXSize());
+                }
+
+                if (jSize == null)
+                {
+                    jSize = Integer.valueOf(band.GetYSize());
+                }
+                else
+                {
+                    jSize = Math.max(jSize.intValue(), band.GetYSize());
+                }
+
+                dataBuilder.add(loadData(band));
+
+                Double[] min = new Double[1];
+                Double[] max = new Double[1];
+
+                band.GetMinimum(min);
+                band.GetMaximum(max);
+
+                double finalMin = min[0] != null ? min[0].doubleValue() : Double.NEGATIVE_INFINITY;
+                double finalMax = max[0] != null ? max[0].doubleValue() : Double.POSITIVE_INFINITY;
+
+                rangeBuilder.add(new DoubleRangeGetter() {
+
+                    @Override
+                    public double getMin()
+                    {
+                        return finalMin;
+                    }
+
+                    @Override
+                    public double getMax()
+                    {
+                        return finalMax;
+                    }
+
+                    @Override
+                    public String toString()
+                    {
+                        return "range [" + finalMin + ", " + finalMax + "]";
+                    }
+                });
             }
         }
 
-        return builder.build();
+        ImmutableList<DoubleGetter2d> data = dataBuilder.build();
+
+        if (data.isEmpty())
+        {
+            return BasicLayer.emptyLayer();
+        }
+
+        LayerDoubleBuilder layerBuilder = new LayerDoubleBuilder();
+
+        DoubleGetter3d dg3d = (i, j, k) -> {
+            return data.get(k).get(i, j);
+        };
+        layerBuilder.doubleGetter(dg3d, iSize.intValue(), jSize.intValue(), data.size());
+
+        layerBuilder.checker(getValidityChecker());
+
+        ImmutableList<DoubleRangeGetter> ranges = rangeBuilder.build();
+
+        VectorRangeGetter vrg = new VectorRangeGetter() {
+
+            @Override
+            public int size()
+            {
+                return ranges.size();
+            }
+
+            @Override
+            public RangeGetter get(int index)
+            {
+                return ranges.get(index);
+            }
+
+            @Override
+            public String toString()
+            {
+                return ranges.get(0).toString() + "...";
+            }
+
+        };
+
+        layerBuilder.rangeGetter(vrg);
+
+        return layerBuilder.build();
     }
 
     /**
-     * Load one or more {@link Layer}s from the specified GDAL {@link Band}.
+     * Load one layer's worth of data as a {@link DoubleGetter2d} from a single
+     * GDAL {@link Band}.
      * <p>
-     * The base implementation in {@link LayerLoader} uses a
-     * {@link LayerDoubleBuilder} to create a scalar implementation of
-     * {@link Layer} from the (entire) band, which is read at one time into an
-     * array of the smallest Java primitve data type that can accommodate the
-     * native data type contained in the band, as specified by the return value
-     * of {@link Band#getDataType()}. The sign of the resulting values will be
-     * correct, but 64-bit integer types will suffer a loss of precision if they
-     * are converted/read using {@link PixelDouble}.
+     * The base implementation in {@link LayerLoader} uses the return value of
+     * {@link Band#getDataType()} to determine the smallest Java primitve data
+     * type that can accommodate the native data type contained in the band.
+     * Most types can be accurately converted to double, but 64-bit integer
+     * types, while converted accurately, will suffer a loss of precision.
      * <p>
      * The base implementation handles all GDAL data types that do not represent
      * complex values.
@@ -91,12 +193,12 @@ public abstract class LayerLoader
      * {@link PixelDouble}, these unsigned byte values would be accurately
      * converted to doubles in the range [0.0, 255.0] without loss of precision.
      *
-     * @param band the band used to create the layer
-     * @return the loaded layer
+     * @param band the band from which to load the data
+     * @return the data accessor
      * @throws UnsupportedDataTypeException if the underlying type in the GDAL
      *             {@link Band} cannot be read into the layer
      */
-    protected Layer createLayer(Band band)
+    protected DoubleGetter2d loadData(Band band)
     {
         int dt = band.getDataType();
         int xSize = band.getXSize();
@@ -140,10 +242,12 @@ public abstract class LayerLoader
             throw new UnsupportedDataTypeException("Cannot represent GDAL data type " + dt + " as a double");
         }
 
-        LayerDoubleBuilder b = new LayerDoubleBuilder();
-        b.doubleGetter(dg, xSize, ySize);
-
-        return b.build();
+        return dg;
     }
 
+    @Override
+    public String toString()
+    {
+        return getDataSet() != null ? "GDAL layer loader ready" : "GDAL layer loader -- no dataset";
+    }
 }
