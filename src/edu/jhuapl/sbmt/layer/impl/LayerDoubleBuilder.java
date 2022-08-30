@@ -43,14 +43,7 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
         return this;
     }
 
-    public LayerDoubleBuilder checker(ValidityChecker2d checker)
-    {
-        setChecker(checker);
-
-        return this;
-    }
-
-    public LayerDoubleBuilder checker(ValidityChecker3d checker)
+    public LayerDoubleBuilder checker(ValidityChecker checker)
     {
         setChecker(checker);
 
