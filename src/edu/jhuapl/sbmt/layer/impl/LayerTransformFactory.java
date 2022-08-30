@@ -435,10 +435,12 @@ public class LayerTransformFactory
     }
 
     /**
-     * Return a function that extracts one scalar slice from a vector layer.
+     * Return a function that extracts one scalar slice from a vector layer
      *
-     * @param slicePixel
-     * @param index
+     * @param slicePixel vector pixel adopted by the slice function and used as
+     *            an intermediary pixel value to get the whole vector from which
+     *            the slice is picked
+     * @param index to slice from within the vector layer
      * @return the function
      */
     public Function<Layer, Layer> slice(PixelVector slicePixel, int index)
