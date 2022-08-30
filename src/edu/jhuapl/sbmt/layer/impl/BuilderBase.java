@@ -69,7 +69,7 @@ public abstract class BuilderBase
      */
     protected void setJSize(int size)
     {
-        Preconditions.checkArgument(size > +0);
+        Preconditions.checkArgument(size >= 0);
 
         set(this.jSize, Integer.valueOf(size), "Cannot change size of J-th dimension after it is set");
     }
