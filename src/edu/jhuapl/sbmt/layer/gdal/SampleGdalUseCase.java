@@ -1,13 +1,17 @@
 package edu.jhuapl.sbmt.layer.gdal;
 
 import java.nio.file.Paths;
+import java.util.function.Function;
 
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
 
+import edu.jhuapl.saavtk.util.NativeLibraryLoader;
+import edu.jhuapl.sbmt.image2.pipelineComponents.VTKDebug;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
+import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory;
 import edu.jhuapl.sbmt.layer.impl.PixelVectorDoubleFactory;
 import edu.jhuapl.sbmt.layer.impl.ValidityChecker2d;
 
@@ -19,17 +23,20 @@ public class SampleGdalUseCase
 {
     public static void main(String[] args)
     {
+    	NativeLibraryLoader.loadAllVtkLibraries();
         gdal.AllRegister();
-
         // This is a DART/LICIA/LUKE test image, which is a 3-band UNSIGNED byte
         // image that has both Didymos and Dimorphos visible and fairly large.
         // For a given (i, j), all 3 k-bands have the same pixel value.
         String sampleFile = Paths.get(System.getProperty("user.home"), //
-                "jhuapl/dev/sbmt/redmine-2356", //
+                "Downloads", //
                 "liciacube_luke_l0_717506291_294_01.fits").toString();
+        String sampleFile2 = Paths.get(System.getProperty("user.home"), //
+                "Desktop/SBMT Example Data files/", //
+                "Global_20181213_20181201_Shape14_NatureEd.png").toString();
 
         // Start by pulling the data set out of the file.
-        Dataset dataSet = gdal.Open(sampleFile);
+        Dataset dataSet = gdal.Open(sampleFile2);
         if (dataSet != null)
         {
             // Create a fake validity checker just to show how to use it. A real
@@ -46,6 +53,19 @@ public class SampleGdalUseCase
             // architecture of the image.
             Layer layer = new LayerLoaderBuilder().dataSet(dataSet).checker(vc).build().load();
 
+            PixelVector factory = new PixelVectorDoubleFactory().of(3, Double.NaN);
+            Function<Layer, Layer> transform = new LayerTransformFactory().slice(factory, 2);
+            Layer singleLayer = transform.apply(layer);
+
+            try
+			{
+				VTKDebug.previewLayer(singleLayer, "GDAL Layer test");
+			}
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             // See above -- we know this is 3 in this case.
             int kSize = layer.dataSizes().get(0);
 
