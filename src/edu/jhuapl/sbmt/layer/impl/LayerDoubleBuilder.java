@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
+import edu.jhuapl.sbmt.layer.api.KeyValueCollection;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
@@ -64,6 +65,13 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
         return this;
     }
 
+    public LayerDoubleBuilder keyValueCollection(KeyValueCollection keyValueCollection)
+    {
+        setKeyValueCollection(keyValueCollection);
+
+        return this;
+    }
+
     public Layer build()
     {
         DoubleGetter2d getter2d = getter2d();
@@ -75,16 +83,22 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
         int iSize = iSize();
         int jSize = jSize();
 
+        KeyValueCollection keyValueCollection = this.keyValueCollection.get();
+        if (keyValueCollection == null)
+        {
+            keyValueCollection = ImmutableKeyValueCollection.of();
+        }
+
         Layer layer = null;
         if (getter2d != null)
         {
-            layer = create(getter2d, iSize, jSize);
+            layer = create(getter2d, iSize, jSize, keyValueCollection);
         }
         else if (getter3d != null)
         {
             int kSize = kSize();
 
-            layer = create(getter3d, iSize, jSize, kSize);
+            layer = create(getter3d, iSize, jSize, kSize, keyValueCollection);
         }
         else
         {
@@ -94,7 +108,7 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
         return layer;
     }
 
-    protected Layer create(DoubleGetter2d getter, int iSize, int jSize)
+    protected Layer create(DoubleGetter2d getter, int iSize, int jSize, KeyValueCollection keyValueCollection)
     {
         ValidityChecker2d checker = validityChecker2d();
 
@@ -135,6 +149,12 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
             }
 
             @Override
+            public KeyValueCollection getKeyValueCollection()
+            {
+                return keyValueCollection;
+            }
+
+            @Override
             public String toString()
             {
                 String toString = super.toString();
@@ -149,7 +169,7 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
         };
     }
 
-    protected Layer create(DoubleGetter3d getter, int iSize, int jSize, int kSize)
+    protected Layer create(DoubleGetter3d getter, int iSize, int jSize, int kSize, KeyValueCollection keyValueCollection)
     {
         List<Integer> dataSizes = ImmutableList.of(Integer.valueOf(kSize));
 
@@ -202,6 +222,12 @@ public class LayerDoubleBuilder extends DoubleBuilderBase
                 }
 
                 return toString;
+            }
+
+            @Override
+            public KeyValueCollection getKeyValueCollection()
+            {
+                return keyValueCollection;
             }
 
         };

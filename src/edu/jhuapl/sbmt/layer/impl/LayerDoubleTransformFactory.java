@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
 
+import edu.jhuapl.sbmt.layer.api.KeyValueCollection;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
@@ -330,6 +331,13 @@ public class LayerDoubleTransformFactory
 
                     return Double.NaN;
                 }
+
+                @Override
+                public KeyValueCollection getKeyValueCollection()
+                {
+                    return layer.getKeyValueCollection();
+                }
+
             };
         };
     }

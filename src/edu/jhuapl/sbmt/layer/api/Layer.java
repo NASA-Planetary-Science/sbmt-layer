@@ -132,4 +132,12 @@ public interface Layer
         pMax.setIsValid(false);
     }
 
+    /**
+     * Return this layer's collection of descriptive key-value pairs (metadata
+     * about the layer).
+     *
+     * @return the collection
+     */
+    KeyValueCollection getKeyValueCollection();
+
 }

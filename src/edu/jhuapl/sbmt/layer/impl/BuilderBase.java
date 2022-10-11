@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.base.Preconditions;
 
+import edu.jhuapl.sbmt.layer.api.KeyValueCollection;
 import edu.jhuapl.sbmt.layer.api.Layer;
 
 /**
@@ -29,6 +30,7 @@ public abstract class BuilderBase
     protected final AtomicReference<Integer> kSize;
     protected final AtomicReference<ValidityChecker> checker;
     protected final AtomicReference<RangeGetter> rangeGetter;
+    protected final AtomicReference<KeyValueCollection> keyValueCollection;
 
     protected BuilderBase()
     {
@@ -39,6 +41,7 @@ public abstract class BuilderBase
         this.kSize = new AtomicReference<>();
         this.checker = new AtomicReference<>();
         this.rangeGetter = new AtomicReference<>();
+        this.keyValueCollection = new AtomicReference<>();
     }
 
     /**
@@ -117,6 +120,16 @@ public abstract class BuilderBase
     protected void setRangeGetter(RangeGetter rangeGetter)
     {
         set(this.rangeGetter, rangeGetter, "Cannot change range getter after it is set");
+    }
+
+    protected void setKeyValueCollection(KeyValueCollection keyValueCollection)
+    {
+        if (keyValueCollection == null)
+        {
+            keyValueCollection = ImmutableKeyValueCollection.of();
+        }
+
+        set(this.keyValueCollection, keyValueCollection, "Cannot change key-value collection after it is set");
     }
 
     /**

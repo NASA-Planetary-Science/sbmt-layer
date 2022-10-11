@@ -6,6 +6,7 @@ import java.util.function.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
+import edu.jhuapl.sbmt.layer.api.KeyValueCollection;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
@@ -507,6 +508,13 @@ public class LayerTransformFactory
                 {
                     return layer.isGetAccepts(pixelType);
                 }
+
+                @Override
+                public KeyValueCollection getKeyValueCollection()
+                {
+                    return layer.getKeyValueCollection();
+                }
+
             };
 
         };
@@ -630,6 +638,12 @@ public class LayerTransformFactory
                     int jOrig = (int) Math.floor(y);
 
                     layer.get(iOrig, jOrig, pd);
+                }
+
+                @Override
+                public KeyValueCollection getKeyValueCollection()
+                {
+                    return layer.getKeyValueCollection();
                 }
 
             };
@@ -825,9 +839,15 @@ public class LayerTransformFactory
         }
 
         @Override
+        public KeyValueCollection getKeyValueCollection()
+        {
+            return target.getKeyValueCollection();
+        }
+
+        @Override
         public String toString()
         {
-            return "Layer(" + iSize() + ", " + jSize() + ")";
+            return BasicLayer.createDescription(this);
         }
 
     }

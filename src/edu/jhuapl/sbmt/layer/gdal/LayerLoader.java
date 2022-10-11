@@ -1,17 +1,23 @@
 package edu.jhuapl.sbmt.layer.gdal;
 
+import java.util.Hashtable;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdalconst.gdalconst;
 
 import com.google.common.collect.ImmutableList;
 
+import edu.jhuapl.sbmt.layer.api.KeyValueCollection;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
 import edu.jhuapl.sbmt.layer.impl.BasicLayer;
 import edu.jhuapl.sbmt.layer.impl.DoubleBuilderBase.DoubleRangeGetter;
 import edu.jhuapl.sbmt.layer.impl.DoubleGetter2d;
 import edu.jhuapl.sbmt.layer.impl.DoubleGetter3d;
+import edu.jhuapl.sbmt.layer.impl.ImmutableKeyValueCollection;
 import edu.jhuapl.sbmt.layer.impl.LayerDoubleBuilder;
 import edu.jhuapl.sbmt.layer.impl.RangeGetter;
 import edu.jhuapl.sbmt.layer.impl.ValidityChecker3d;
@@ -133,6 +139,20 @@ public abstract class LayerLoader
             return BasicLayer.emptyLayer();
         }
 
+        @SuppressWarnings("unchecked")
+        Hashtable<String, String> md = dataSet.GetMetadata_Dict();
+
+        ImmutableKeyValueCollection.Builder kvBuilder = ImmutableKeyValueCollection.builder();
+        if (md != null && !md.isEmpty())
+        {
+            Set<String> keySet = new TreeSet<>(md.keySet());
+            for (String key : keySet)
+            {
+                kvBuilder.add(key, md.get(key));
+            }
+        }
+        KeyValueCollection keyValueCollection = kvBuilder.build();
+
         LayerDoubleBuilder layerBuilder = new LayerDoubleBuilder();
 
         DoubleGetter3d dg3d = (i, j, k) -> {
@@ -167,6 +187,8 @@ public abstract class LayerLoader
         };
 
         layerBuilder.rangeGetter(vrg);
+
+        layerBuilder.keyValueCollection(keyValueCollection);
 
         return layerBuilder.build();
     }

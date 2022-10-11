@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
+import edu.jhuapl.sbmt.layer.api.KeyValueCollection;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
@@ -59,7 +60,71 @@ public abstract class BasicLayer implements Layer
             throw new IllegalArgumentException();
         }
 
+        @Override
+        public KeyValueCollection getKeyValueCollection()
+        {
+            return ImmutableKeyValueCollection.of();
+        }
+
     };
+
+    public static String createDescription(Layer layer)
+    {
+        Preconditions.checkNotNull(layer);
+
+        List<Integer> dataSizes = layer.dataSizes();
+        String delim = ", ";
+
+        StringBuilder builder = new StringBuilder();
+        Integer vecSize = dataSizes.get(0);
+        if (dataSizes.size() == 1)
+        {
+            builder.append(vecSize > 1 ? "Vector Layer(" : "Scalar Layer(");
+        }
+        else
+        {
+            builder.append("Multi-dim Layer(");
+        }
+
+        builder.append(layer.iSize());
+        builder.append(delim);
+        builder.append(layer.jSize());
+        builder.append(")");
+
+        if (dataSizes.size() == 1)
+        {
+            if (vecSize > 1)
+            {
+                builder.append(" x ");
+                builder.append(vecSize);
+            }
+        }
+        else
+        {
+            builder.append(" x (");
+            delim = "";
+            for (Integer size : dataSizes)
+            {
+                builder.append(delim);
+                builder.append(size);
+                delim = ", ";
+            }
+            builder.append(")");
+        }
+
+        KeyValueCollection kvCollection = layer.getKeyValueCollection();
+        if (kvCollection.size() > 0)
+        {
+            builder.append("\nKey-value pairs:");
+            for (int i = 0; i < kvCollection.size(); ++i)
+            {
+                builder.append("\n\t");
+                builder.append(kvCollection.get(i));
+            }
+        }
+
+        return builder.toString();
+    }
 
     /**
      * Return an immutable empty layer, that is, one with zero size in I and J,
@@ -247,47 +312,7 @@ public abstract class BasicLayer implements Layer
     @Override
     public String toString()
     {
-        List<Integer> dataSizes = dataSizes();
-        String delim = ", ";
-
-        StringBuilder builder = new StringBuilder();
-        Integer vecSize = dataSizes.get(0);
-        if (dataSizes.size() == 1)
-        {
-            builder.append(vecSize > 1 ? "Vector Layer(" : "Scalar Layer(");
-        }
-        else
-        {
-            builder.append("Multi-dim Layer(");
-        }
-
-        builder.append(iSize());
-        builder.append(delim);
-        builder.append(jSize());
-        builder.append(")");
-
-        if (dataSizes.size() == 1)
-        {
-            if (vecSize > 1)
-            {
-                builder.append(" x ");
-                builder.append(vecSize);
-            }
-        }
-        else
-        {
-            builder.append(" x (");
-            delim = "";
-            for (Integer size : dataSizes)
-            {
-                builder.append(delim);
-                builder.append(size);
-                delim = ", ";
-            }
-            builder.append(")");
-        }
-
-        return builder.toString();
+        return createDescription(this);
     }
 
 }
