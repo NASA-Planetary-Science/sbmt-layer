@@ -295,7 +295,7 @@ public class LayerDoubleTransformFactory
                     }
                     else
                     {
-                        Preconditions.checkArgument(d instanceof PixelDouble);
+                        Preconditions.checkArgument(d instanceof PixelVector);
                         throw new UnsupportedOperationException("need to implement interpolation for vector case");
                     }
 
