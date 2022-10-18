@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import edu.jhuapl.sbmt.layer.api.KeyValueCollection;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
+import edu.jhuapl.sbmt.layer.api.PixelOperator;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
 
 /**
@@ -335,6 +336,91 @@ public class LayerTransformFactory
 
         return layer -> {
             return subsetLayer(layer, iMin, iNewSize, jMin, jNewSize);
+        };
+    }
+
+    /**
+     * Return a function that expands a layer, adding pixels on any/all side,
+     * thus increasing the size of the layer. The caller can control the
+     * behavior of expanded pixels using the specified {@link PixelOperator}
+     * instance.
+     *
+     * @param iLowerOffset number of pixels to add before index == 0 in the X/I
+     *            dimension
+     * @param iUpperOffset number of pixels to add after index == size - 1 in
+     *            the X/I dimension
+     * @param jLowerOffset number of pixels to add before index == 0 in the Y/J
+     *            dimension
+     * @param jUpperOffset number of pixels to add after index == size - 1 in
+     *            the Y/J dimension
+     * @param expandOperator operator that will be applied to pixels created by
+     *            the espansion
+     * @return the function
+     * @see LayerDoubleTransformFactory#expand(int, int, int, int, double) for a
+     *      convenient front-end to this method that sets expanded pixels to a
+     *      specified constant value
+     */
+    public Function<Layer, Layer> expand(int iLowerOffset, int iUpperOffset, int jLowerOffset, int jUpperOffset, PixelOperator expandOperator)
+    {
+        Preconditions.checkArgument(iLowerOffset >= 0);
+        Preconditions.checkArgument(iUpperOffset >= 0);
+        Preconditions.checkArgument(jLowerOffset >= 0);
+        Preconditions.checkArgument(jUpperOffset >= 0);
+        Preconditions.checkNotNull(expandOperator);
+
+        return layer -> {
+            return new ForwardingLayer(layer) {
+
+                int origISize = layer.iSize();
+                int origJSize = layer.jSize();
+
+                int newISize = origISize + iLowerOffset + iUpperOffset;
+                int newJSize = origJSize + jLowerOffset + jUpperOffset;
+
+                @Override
+                public int iSize()
+                {
+                    return newISize;
+                }
+
+                @Override
+                public int jSize()
+                {
+                    return newJSize;
+                }
+
+                @Override
+                public void get(int i, int j, Pixel p)
+                {
+                    int origI = i - iLowerOffset;
+                    int origJ = j - jLowerOffset;
+
+                    // Handle expansion area
+                    if (i >= 0 && i < newISize && j >= 0 && j < newISize)
+                    {
+                        // (i, j) are in bounds in the new indexing. In this
+                        // case, need to check whether this is within the
+                        // expansion area.
+                        if (origI < 0 || origI >= origISize || origJ < 0 || origJ >= origJSize)
+                        {
+                            // New index is in bounds but orig index is out of
+                            // bounds. This is the expansion area. Let the
+                            // expansion operator handle this pixel; don't use
+                            // the original layer.
+                            expandOperator.operate(p);
+
+                            return;
+                        }
+                    }
+
+                    // If we fell through to here, we are either in bounds in
+                    // the original layer, or else well out-of-bounds of the
+                    // original layer. Either way, in this case, allow the
+                    // original layer to handle the pixel.
+                    layer.get(origI, origJ, p);
+                }
+
+            };
         };
     }
 

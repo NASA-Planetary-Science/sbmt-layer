@@ -8,6 +8,7 @@ import edu.jhuapl.sbmt.layer.api.KeyValueCollection;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.Pixel;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
+import edu.jhuapl.sbmt.layer.api.PixelOperator;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
 import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory.ForwardingLayer;
 
@@ -27,10 +28,16 @@ import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory.ForwardingLayer;
  */
 public class LayerDoubleTransformFactory
 {
-
     protected static final PixelDoubleFactory PixelScalarFactory = new PixelDoubleFactory();
 
     protected static final PixelVectorDoubleFactory PixelVectorFactory = new PixelVectorDoubleFactory();
+
+    protected static final LayerTransformFactory TransformFactory = new LayerTransformFactory();
+
+    /**
+     * {@link PixelOperator} instance that only sets the pixel out-of-bounds.
+     */
+    protected static final PixelOperator OutOfBoundsOperator = p -> p.setInBounds(false);
 
     @FunctionalInterface
     public interface DoubleTransform
@@ -355,6 +362,186 @@ public class LayerDoubleTransformFactory
     protected boolean checkIndex(int index, int minValid, int maxValid)
     {
         return index >= minValid && index < maxValid;
+    }
+
+    /**
+     * Return a function that expands layers by padding them out with the
+     * specified constant value.
+     *
+     * @param iLowerOffset number of pixels to add before index == 0 in the X/I
+     *            dimension
+     * @param iUpperOffset number of pixels to add after index == size - 1 in
+     *            the X/I dimension
+     * @param jLowerOffset number of pixels to add before index == 0 in the Y/J
+     *            dimension
+     * @param jUpperOffset number of pixels to add after index == size - 1 in
+     *            the Y/J dimension
+     * @param expandValue value to punch into output pixels that are created by
+     *            expansion
+     * @return the function
+     * @see LayerTransformFactory#expand(int, int, int, int, PixelOperator) for
+     *      a more general expansion utility
+     */
+    public Function<Layer, Layer> expand(int iLowerOffset, int iUpperOffset, int jLowerOffset, int jUpperOffset, double expandValue)
+    {
+        // The out-of-bounds value of this pixel will not normally be used.
+        PixelDouble expandPixel = new PixelDoubleFactory().of(expandValue, Double.NaN);
+
+        return new LayerTransformFactory().expand(iLowerOffset, iUpperOffset, jLowerOffset, jUpperOffset, p -> {
+            p.assignFrom(expandPixel);
+        });
+    }
+
+    /**
+     * Utility method put an angle in degrees into the range [ 0.0, 360.0 ).
+     *
+     * @param angle in degrees
+     * @return angle in degrees
+     */
+    public double putInRange0to360(double angle)
+    {
+        while (angle < 0.0)
+        {
+            angle += 360.0;
+        }
+        while (angle >= 360.0)
+        {
+            angle -= 360.0;
+        }
+
+        return angle;
+    }
+
+    /**
+     * Return a function that rotates a layer about its center by the specified
+     * number of degrees, preserving the dimensions of the original layer. Any
+     * pixels in the output layer that cannot be associated with one or more
+     * pixels in the input layer will be set to out-of-bounds.
+     *
+     * @param rotation the rotation in degrees to apply to a layer
+     * @return the function
+     * @see #rotatePreservingSize(double, double) for a rotation that allows the
+     *      user to specify a value to place in expanded pixels
+     * @see #rotatePreservingSize(double, PixelOperator) for a more general
+     *      rotation utility
+     */
+    public Function<Layer, Layer> rotatePreservingSize(double rotation)
+    {
+        return rotatePreservingSize(rotation, OutOfBoundsOperator);
+    }
+
+    /**
+     * Return a function that rotates a layer about its center by the specified
+     * number of degrees, preserving the dimensions of the original layer. Any
+     * pixels in the output layer that cannot be associated with one or more
+     * pixels in the input layer will be set to the specified expansion value.
+     *
+     * @param rotation the rotation in degrees to apply to a layer
+     * @param expandValue value to punch into output pixels that are created by
+     *            rotation
+     * @return the function
+     * @see #rotatePreservingSize(double) for a rotation that simply marks
+     *      created pixels as out-of-bounds
+     * @see #rotatePreservingSize(double, PixelOperator) for a more general
+     *      rotation utility
+     */
+    public Function<Layer, Layer> rotatePreservingSize(double rotation, double expandValue)
+    {
+        // The out-of-bounds value will not be used.
+        PixelDouble expandPixel = new PixelDoubleFactory().of(expandValue, Double.NaN);
+
+        return rotatePreservingSize(rotation, p -> {
+            p.assignFrom(expandPixel);
+        });
+    }
+
+    /**
+     * Return a function that rotates a layer about its center by the specified
+     * number of degrees, preserving the dimensions of the original layer. Any
+     * pixels in the output layer that cannot be associated with one or more
+     * pixels in the input layer will be operated upon by the specified
+     * expansion operator.
+     * <p>
+     * The base implementation of this method only handles multiples of 90
+     * degrees: 0, 90, 180 and so on. For all such rotations, square layers are
+     * truly rotated, with each pixel in the input layer mapping to a pixel in
+     * the output layer. Rectangular images are expanded, rotated, and then
+     * cropped in such cases, so that only pixels in the square central region
+     * of the input layer will be present in the output layer and portions of
+     * the output layer will have been set up using the expand operator.
+     *
+     * @param rotation the rotation in degrees to apply to a layer
+     * @param expandOperator that will act upon pixels not associated with input
+     *            pixels
+     * @return the function
+     * @see #rotatePreservingSize(double) for a rotation that simply marks
+     *      created pixels as out-of-bounds
+     * @see #rotatePreservingSize(double, double) for a rotation that punches a
+     *      single constant value into pixels in the output layer that are
+     *      created by the rotation
+     */
+    public Function<Layer, Layer> rotatePreservingSize(double rotation, PixelOperator expandOperator)
+    {
+        Preconditions.checkNotNull(expandOperator);
+
+        rotation = putInRange0to360(rotation);
+
+        Function<Layer, Layer> function;
+        if (rotation == 0.0)
+        {
+            function = TransformFactory.identity();
+        }
+        else if (rotation == 180.0)
+        {
+            function = TransformFactory.invertIJ();
+        }
+        else
+        {
+            Function<Layer, Layer> rotationOperator;
+            if (rotation == 90.0)
+            {
+                rotationOperator = TransformFactory.rotateCCW();
+            }
+            else if (rotation == 270.0)
+            {
+                rotationOperator = TransformFactory.rotateCW();
+            }
+            else
+            {
+                throw new IllegalArgumentException("Rotation by angle of " + rotation + " is not (yet) supported.");
+            }
+
+            function = layer -> {
+                int iSize = layer.iSize();
+                int jSize = layer.jSize();
+
+                int delta = Math.abs(iSize - jSize);
+                int lowOffset = delta / 2;
+                int highOffset = delta - lowOffset;
+
+                Function<Layer, Layer> r;
+                if (iSize > jSize)
+                {
+                    r = TransformFactory.expand(0, 0, lowOffset, highOffset, expandOperator) //
+                            .andThen(rotationOperator) //
+                            .andThen(TransformFactory.trimJ(lowOffset, highOffset));
+                }
+                else if (iSize < jSize)
+                {
+                    r = TransformFactory.expand(lowOffset, highOffset, 0, 0, expandOperator) //
+                            .andThen(rotationOperator) //
+                            .andThen(TransformFactory.trimI(lowOffset, highOffset));
+                }
+                else
+                {
+                    r = rotationOperator;
+                }
+
+                return r.apply(layer);
+            };
+        }
+
+        return function;
     }
 
 }
