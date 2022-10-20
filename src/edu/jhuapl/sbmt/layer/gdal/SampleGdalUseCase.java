@@ -23,7 +23,7 @@ public class SampleGdalUseCase
 {
     public static void main(String[] args)
     {
-    	NativeLibraryLoader.loadAllVtkLibraries();
+        NativeLibraryLoader.loadAllVtkLibraries();
         gdal.AllRegister();
         // This is a DART/LICIA/LUKE test image, which is a 3-band UNSIGNED byte
         // image that has both Didymos and Dimorphos visible and fairly large.
@@ -35,8 +35,10 @@ public class SampleGdalUseCase
                 "Desktop/SBMT Example Data files/", //
                 "Global_20181213_20181201_Shape14_NatureEd.png").toString();
 
+        sampleFile = sampleFile2;
+
         // Start by pulling the data set out of the file.
-        Dataset dataSet = gdal.Open(sampleFile2);
+        Dataset dataSet = gdal.Open(sampleFile);
         if (dataSet != null)
         {
             // Create a fake validity checker just to show how to use it. A real
@@ -58,14 +60,14 @@ public class SampleGdalUseCase
             Layer singleLayer = transform.apply(layer);
 
             try
-			{
-				VTKDebug.previewLayer(singleLayer, "GDAL Layer test");
-			}
-			catch (Exception e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            {
+                VTKDebug.previewLayer(singleLayer, "GDAL Layer test");
+            }
+            catch (Exception e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             // See above -- we know this is 3 in this case.
             int kSize = layer.dataSizes().get(0);
 
