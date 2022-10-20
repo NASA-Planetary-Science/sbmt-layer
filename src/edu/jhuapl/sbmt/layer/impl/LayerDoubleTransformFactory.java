@@ -544,4 +544,17 @@ public class LayerDoubleTransformFactory
         return function;
     }
 
+    public Function<Layer, Layer> slice(int index, double oobValue)
+    {
+        Preconditions.checkArgument(index >= 0);
+
+        int size = index + 1;
+
+        PixelVector slicePixel = PixelVectorFactory.of(size, oobValue);
+        PixelVector minPixel = PixelVectorFactory.of(size, oobValue);
+        PixelVector maxPixel = PixelVectorFactory.of(size, oobValue);
+
+        return TransformFactory.slice(index, slicePixel, minPixel, maxPixel);
+    }
+
 }

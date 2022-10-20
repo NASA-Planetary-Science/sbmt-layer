@@ -907,7 +907,7 @@ public abstract class FakePipeline
 
         System.out.println("Show what happens when one slices a vector, pulling out the middle element of the 3");
         PixelVector pv = PixelVectorFactory.of(3, TestOOBValue, null);
-        vectorToVector(TestKSize, null, TransformFactory.slice(pv, 1)).run();
+        vectorToVector(TestKSize, null, DoubleTransformFactory.slice(1, TestOOBValue)).run();
 
         System.out.println("Show what happens when a subset of a scalar layer I range = [1, 4), J range = [1, 3) is taken");
         scalarToScalar(null, TransformFactory.subset(1, 4, 1, 3)).run();

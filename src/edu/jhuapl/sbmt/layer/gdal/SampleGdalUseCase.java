@@ -11,7 +11,8 @@ import edu.jhuapl.sbmt.image2.pipelineComponents.VTKDebug;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
-import edu.jhuapl.sbmt.layer.impl.LayerTransformFactory;
+import edu.jhuapl.sbmt.layer.impl.LayerDoubleTransformFactory;
+import edu.jhuapl.sbmt.layer.impl.PixelDoubleFactory;
 import edu.jhuapl.sbmt.layer.impl.PixelVectorDoubleFactory;
 import edu.jhuapl.sbmt.layer.impl.ValidityChecker2d;
 
@@ -55,8 +56,7 @@ public class SampleGdalUseCase
             // architecture of the image.
             Layer layer = new LayerLoaderBuilder().dataSet(dataSet).checker(vc).build().load();
 
-            PixelVector factory = new PixelVectorDoubleFactory().of(3, Double.NaN);
-            Function<Layer, Layer> transform = new LayerTransformFactory().slice(factory, 2);
+            Function<Layer, Layer> transform = new LayerDoubleTransformFactory().slice(2, Double.NaN);
             Layer singleLayer = transform.apply(layer);
 
             try
@@ -68,6 +68,14 @@ public class SampleGdalUseCase
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+
+            // Test range getter from the scalar.
+            PixelDouble min = new PixelDoubleFactory().of(Double.NaN, Double.NaN);
+            PixelDouble max = new PixelDoubleFactory().of(Double.NaN, Double.NaN);
+            singleLayer.getRange(min, max);
+
+            System.out.println("Range of layer 2 is " + min + " to " + max);
+
             // See above -- we know this is 3 in this case.
             int kSize = layer.dataSizes().get(0);
 

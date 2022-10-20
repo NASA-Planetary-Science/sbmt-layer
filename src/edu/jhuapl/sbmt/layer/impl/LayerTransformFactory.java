@@ -523,18 +523,24 @@ public class LayerTransformFactory
 
     /**
      * Return a function that extracts one scalar slice from a vector layer
-     *
+     * @param index to slice from within the vector layer
      * @param slicePixel vector pixel adopted by the slice function and used as
      *            an intermediary pixel value to get the whole vector from which
      *            the slice is picked
-     * @param index to slice from within the vector layer
+     * @param minPixel vector pixel adopted by the slice functions and used as an intermediary pixel for the minimum value when getting the range
+     * @param maxPixel vector pixel adopted by the slice functions and used as an intermediary pixel for the minimum value when getting the range
+     *
      * @return the function
      */
-    public Function<Layer, Layer> slice(PixelVector slicePixel, int index)
+    public Function<Layer, Layer> slice(int index, PixelVector slicePixel, PixelVector minPixel, PixelVector maxPixel)
     {
         Preconditions.checkNotNull(slicePixel);
+        Preconditions.checkNotNull(minPixel);
+        Preconditions.checkNotNull(maxPixel);
         Preconditions.checkArgument(index >= 0);
         Preconditions.checkArgument(slicePixel.size() > index);
+        Preconditions.checkArgument(minPixel.size() == slicePixel.size());
+        Preconditions.checkArgument(maxPixel.size() == slicePixel.size());
 
         return layer -> {
             Preconditions.checkNotNull(layer);
@@ -593,6 +599,15 @@ public class LayerTransformFactory
                 public boolean isGetAccepts(Class<?> pixelType)
                 {
                     return layer.isGetAccepts(pixelType);
+                }
+
+                @Override
+                public void getRange(Pixel pMin, Pixel pMax)
+                {
+                    layer.getRange(minPixel, maxPixel);
+
+                    pMin.assignFrom(minPixel.get(index));
+                    pMax.assignFrom(minPixel.get(index));
                 }
 
                 @Override
