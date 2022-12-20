@@ -523,12 +523,17 @@ public class LayerTransformFactory
 
     /**
      * Return a function that extracts one scalar slice from a vector layer
+     * 
      * @param index to slice from within the vector layer
      * @param slicePixel vector pixel adopted by the slice function and used as
      *            an intermediary pixel value to get the whole vector from which
      *            the slice is picked
-     * @param minPixel vector pixel adopted by the slice functions and used as an intermediary pixel for the minimum value when getting the range
-     * @param maxPixel vector pixel adopted by the slice functions and used as an intermediary pixel for the minimum value when getting the range
+     * @param minPixel vector pixel adopted by the slice functions and used as
+     *            an intermediary pixel for the minimum value when getting the
+     *            range
+     * @param maxPixel vector pixel adopted by the slice functions and used as
+     *            an intermediary pixel for the minimum value when getting the
+     *            range
      *
      * @return the function
      */
