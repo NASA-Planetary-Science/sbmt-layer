@@ -105,9 +105,9 @@ public abstract class FakePipeline
         return ofScalar(TestISize, TestJSize, testScalarChecker(TestISize, TestJSize), null);
     }
 
-    protected Layer createVectorLayer()
+    protected Layer createVectorLayer(int kSize)
     {
-        return ofVector(TestISize, TestJSize, TestKSize, testVectorChecker(TestISize, TestJSize), null);
+        return ofVector(TestISize, TestJSize, kSize, testVectorChecker(TestISize, TestJSize), null);
     }
 
     /**
@@ -492,7 +492,7 @@ public abstract class FakePipeline
             @Override
             protected Layer createLayer()
             {
-                return createVectorLayer();
+                return createVectorLayer(TestKSize);
             }
 
             @Override
@@ -549,7 +549,7 @@ public abstract class FakePipeline
             @Override
             protected Layer createLayer()
             {
-                return createVectorLayer();
+                return createVectorLayer(TestKSize);
             }
 
             @Override
@@ -803,7 +803,7 @@ public abstract class FakePipeline
 
                 if (vectorKSize > 0)
                 {
-                    builder.add(createVectorLayer());
+                    builder.add(createVectorLayer(vectorKSize));
                 }
 
                 return utility.append(builder.build());
@@ -812,13 +812,13 @@ public abstract class FakePipeline
             @Override
             protected void displayCreatedLayer(Layer layer)
             {
-                displayLayer("Created layer", layer, numberScalars, null);
+                displayLayer("Created layer", layer, numberScalars + vectorKSize, null);
             }
 
             @Override
             protected void displayProcessedLayer(Layer layer)
             {
-                displayLayer("Transformed layer", layer, numberScalars, null);
+                displayLayer("Transformed layer", layer, numberScalars + vectorKSize, null);
             }
         };
     }
@@ -1001,7 +1001,7 @@ public abstract class FakePipeline
         testAppendLayer(TestKSize, 0).run();
 
         System.out.println("Test appending a scalar and vector layer");
-        testAppendLayer(1, 1).run();
+        testAppendLayer(1, 3).run();
 
     }
 
