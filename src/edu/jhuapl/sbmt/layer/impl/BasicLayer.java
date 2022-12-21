@@ -30,7 +30,7 @@ public abstract class BasicLayer implements Layer
         @Override
         public List<Integer> dataSizes()
         {
-            return ScalarDataSizes;
+            return ImmutableList.of();
         }
 
         @Override
