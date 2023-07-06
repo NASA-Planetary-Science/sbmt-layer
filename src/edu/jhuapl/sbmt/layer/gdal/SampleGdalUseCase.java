@@ -7,7 +7,7 @@ import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.image2.pipelineComponents.VTKDebug;
+import edu.jhuapl.sbmt.image.pipelineComponents.VTKDebug;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
