@@ -7,7 +7,6 @@ import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
 
 import edu.jhuapl.saavtk.util.NativeLibraryLoader;
-import edu.jhuapl.sbmt.image.pipelineComponents.VTKDebug;
 import edu.jhuapl.sbmt.layer.api.Layer;
 import edu.jhuapl.sbmt.layer.api.PixelDouble;
 import edu.jhuapl.sbmt.layer.api.PixelVector;
@@ -59,15 +58,15 @@ public class SampleGdalUseCase
             Function<Layer, Layer> transform = new LayerDoubleTransformFactory().slice(2, Double.NaN);
             Layer singleLayer = transform.apply(layer);
 
-            try
-            {
-                VTKDebug.previewLayer(singleLayer, "GDAL Layer test");
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+//            try
+//            {
+//                VTKDebug.previewLayer(singleLayer, "GDAL Layer test");
+//            }
+//            catch (Exception e)
+//            {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
 
             // Test range getter from the scalar.
             PixelDouble min = new PixelDoubleFactory().of(Double.NaN, Double.NaN);
