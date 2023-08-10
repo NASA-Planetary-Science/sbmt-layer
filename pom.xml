@@ -95,7 +95,7 @@
 	    </dependencies>
 	  </profile>
 	  <profile>
-	   <id>mac</id>
+	   <id>macm1</id>
 	    <activation>
 	      <os>
 	        <family>mac</family>
