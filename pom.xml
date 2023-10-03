@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.jhuapl.ses.srn.sbmt</groupId>
   <artifactId>sbmt-layer</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-b0</version>
   <name>sbmt-layer</name>
   <description>SBMT Layer library</description>
   <packaging>jar</packaging>
@@ -11,16 +11,16 @@
 	<url>https://www.jhuapl.edu</url>
   </organization>
   <distributionManagement>
-  	<repository>
+  	<!--<repository>
 		<id>central</id>
 		<name>surfshop-releases</name>
 		<url>http://surfshop.jhuapl.edu:8081/artifactory/libs-release-local</url>
-	</repository>
-	<snapshotRepository>
+	</repository>-->
+	<repository> 
 		<id>central</id>
 		<name>surfshop-snapshots</name>
 		<url>http://surfshop.jhuapl.edu:8081/artifactory/libs-snapshot-local</url>
-	</snapshotRepository>
+	</repository>
   </distributionManagement>
   <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
