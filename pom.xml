@@ -11,16 +11,16 @@
 	<url>https://www.jhuapl.edu</url>
   </organization>
   <distributionManagement>
-  	<!--<repository>
+  	<repository>
 		<id>central</id>
 		<name>surfshop-releases</name>
 		<url>http://surfshop.jhuapl.edu:8081/artifactory/libs-release-local</url>
-	</repository>-->
-	<repository> 
+	</repository>
+	<snapshotRepository> 
 		<id>central</id>
 		<name>surfshop-snapshots</name>
 		<url>http://surfshop.jhuapl.edu:8081/artifactory/libs-snapshot-local</url>
-	</repository>
+	</snapshotRepository>
   </distributionManagement>
   <properties>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
