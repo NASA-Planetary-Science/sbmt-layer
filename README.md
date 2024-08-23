@@ -1,10 +1,12 @@
 # sbmt-layer
 
-sbmt-layer is a low level library for the overall [SBMT family of libraries](https://github.com/orgs/NASA-Planetary-Science/teams/sbmt/repositories). It contains classes that act as an intermediate layer between the GDAL library and SBMT.
+![GitHub last commit](https://img.shields.io/github/last-commit/NASA-Planetary-Science/sbmt-layer)
 
-## Usage
+sbmt-layer is a low level library for the overall [SBMT family of libraries](https://github.com/orgs/NASA-Planetary-Science/teams/sbmt/repositories). It contains classes that are act as an intermediately layer between the GDAL library and SBMT.
 
-sbmt-layer is intended as a dependency for other libraries in the SBMT family.  You can either clone this library by itself, or use the [Eclipse project team set file](https://github.com/orgs/NASA-Planetary-Science/teams/sbmt/repositories/sbmt-client/teamProjectSet.psf) located in the [sbmt-client](https://github.com/orgs/NASA-Planetary-Science/teams/sbmt/repositories/sbmt-client) to pull down the entire family of libraries into an Eclipse workspace.
+## Usage 
+
+sbmt-layer is intended as a dependency for other libraries in the SBMT family.  You can either clone this library by itself, or use the [Eclipse project team set file](https://github.com/orgs/NASA-Planetary-Science/teams/sbmt/repositories/sbmt-overview/teamProjectSet.psf) located in the [sbmt-overview](https://github.com/orgs/NASA-Planetary-Science/teams/sbmt/repositories/sbmt-overview) to pull down the entire family of libraries into an Eclipse workspace.
 
 sbmt-layer is available as a jar at [Maven Central](https://central.sonatype.com/artifact/edu.jhuapl.ses/sbmt-layer).  The dependency listing is:
 
