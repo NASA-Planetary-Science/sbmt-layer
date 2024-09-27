@@ -1,11 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>sbmt-layer</artifactId>
-  <version>1.0.1</version> 
-  <name>sbmt-layer</name>
-  <description>SBMT Layer library</description>
-  <packaging>jar</packaging>
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>sbmt-layer</artifactId>
+    <version>1.0.1</version>
+    <name>sbmt-layer</name>
+    <description>SBMT Layer library</description>
+    <packaging>jar</packaging>
+
     <parent>
         <groupId>edu.jhuapl.ses.sbmt</groupId>
         <artifactId>sbmt-overview</artifactId>
@@ -26,8 +28,8 @@
     <properties>
         <gdalVersion>3.7.0.0</gdalVersion>
     </properties>
-  <profiles>
-      <profile>
+    <profiles>
+        <profile>
             <id>internal</id>
             <distributionManagement>
                 <repository>
@@ -237,6 +239,10 @@
     </profiles>
 
     <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
